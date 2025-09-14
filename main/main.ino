@@ -19,6 +19,65 @@ Servo rear_left_low;
 Servo rear_right_high;
 Servo rear_right_low;
 
+#define FRONT_LEFT_HIGH_ZERO 95
+#define FRONT_LEFT_LOW_ZERO 150
+#define FRONT_RIGHT_HIGH_ZERO 95
+#define FRONT_RIGHT_LOW_ZERO 47
+#define REAR_LEFT_HIGH_ZERO 100
+#define REAR_LEFT_LOW_ZERO 50
+#define REAR_RIGHT_HIGH_ZERO 105
+#define REAR_RIGHT_LOW_ZERO 130
+
+#define WALK_DEGREE 35
+#define LEG_UP_DEGREE 45
+
+void home() {
+  front_left_high.write(FRONT_LEFT_HIGH_ZERO);
+  front_left_low.write(FRONT_LEFT_LOW_ZERO);
+  front_right_high.write(FRONT_RIGHT_HIGH_ZERO);
+  front_right_low.write(FRONT_RIGHT_LOW_ZERO);
+  rear_left_high.write(REAR_LEFT_HIGH_ZERO);
+  rear_left_low.write(REAR_LEFT_LOW_ZERO);
+  rear_right_high.write(REAR_RIGHT_HIGH_ZERO);
+  rear_right_low.write(REAR_RIGHT_LOW_ZERO);
+}
+
+void walk(int i) {
+  switch (i) {
+    case 0:
+      front_right_high.write(FRONT_RIGHT_HIGH_ZERO);
+      rear_left_high.write(REAR_LEFT_HIGH_ZERO);
+
+      front_left_low.write(FRONT_LEFT_LOW_ZERO - LEG_UP_DEGREE);
+      front_left_high.write(FRONT_LEFT_HIGH_ZERO - WALK_DEGREE);
+
+      rear_right_low.write(REAR_RIGHT_LOW_ZERO - WALK_DEGREE);
+      rear_right_high.write(REAR_RIGHT_HIGH_ZERO + WALK_DEGREE);
+      break;
+
+    case 1:
+      rear_right_low.write(REAR_RIGHT_LOW_ZERO);
+      front_left_low.write(FRONT_LEFT_LOW_ZERO);
+      break;
+
+    case 2:
+      front_right_low.write(FRONT_RIGHT_LOW_ZERO + WALK_DEGREE);
+      front_right_high.write(FRONT_RIGHT_HIGH_ZERO + WALK_DEGREE);
+    
+      rear_left_low.write(REAR_LEFT_LOW_ZERO + WALK_DEGREE);
+      rear_left_high.write(REAR_LEFT_HIGH_ZERO - WALK_DEGREE);
+
+      front_left_high.write(FRONT_LEFT_HIGH_ZERO);
+      rear_right_high.write(REAR_RIGHT_HIGH_ZERO);
+      break;
+
+    case 3:
+      rear_left_low.write(REAR_LEFT_LOW_ZERO);
+      front_right_low.write(FRONT_RIGHT_LOW_ZERO);
+      break;
+  }
+}
+
 void setup() {
   Serial.begin(115200);
 
@@ -36,7 +95,7 @@ void setup() {
   rear_left_low.attach(14);
   rear_right_high.attach(12);
   rear_right_low.attach(13);
-    /*
+  /*
   server.onRequest([](ghttp::ServerBase::Request req) {
     switch (req.path().hash()) {
       case SH("/script.js"):
@@ -68,17 +127,18 @@ void setup() {
     }
   });
   */
+  home();
+  delay(1000);
 }
-
+int i = 0;
 void loop() {
   //server.tick();
   //dns.processNextRequest();
-  front_left_high.write(95);
-  front_left_low.write(150);
-  front_right_high.write(95);
-  front_right_low.write(47);
-  rear_left_high.write(100);
-  rear_left_low.write(50);
-  rear_right_high.write(105);
-  rear_right_low.write(130);
+  static uint32_t tmr;
+  if (millis() - tmr >= 300) {
+    tmr = millis();
+    i++;
+    if (i > 3) i = 0;
+  }
+  //walk(i);
 }
