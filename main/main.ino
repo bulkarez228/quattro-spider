@@ -1,12 +1,12 @@
 #include <ESP32Servo.h>
 #include <Arduino.h>
-//#include <WiFi.h>
-//#include <GyverHTTP.h>
-//#include <DNSServer.h>
-//#include "webjoy.h"
+#include <WiFi.h>
+#include <GyverHTTP.h>
+#include <DNSServer.h>
+#include "webjoy.h"
 
-//ghttp::Server<WiFiServer, WiFiClient> server(80);
-//DNSServer dns;
+ghttp::Server<WiFiServer, WiFiClient> server(80);
+DNSServer dns;
 
 
 
@@ -19,17 +19,20 @@ Servo rear_left_low;
 Servo rear_right_high;
 Servo rear_right_low;
 
-#define FRONT_LEFT_HIGH_ZERO 95
+#define FRONT_LEFT_HIGH_ZERO 90
 #define FRONT_LEFT_LOW_ZERO 150
-#define FRONT_RIGHT_HIGH_ZERO 95
+#define FRONT_RIGHT_HIGH_ZERO 90
 #define FRONT_RIGHT_LOW_ZERO 47
-#define REAR_LEFT_HIGH_ZERO 100
+#define REAR_LEFT_HIGH_ZERO 90
 #define REAR_LEFT_LOW_ZERO 50
-#define REAR_RIGHT_HIGH_ZERO 105
+#define REAR_RIGHT_HIGH_ZERO 90
 #define REAR_RIGHT_LOW_ZERO 130
 
 #define WALK_DEGREE 35
-#define LEG_UP_DEGREE 45
+#define LEG_UP_DEGREE 60
+
+int i = 0;
+int x, y;
 
 void home() {
   front_left_high.write(FRONT_LEFT_HIGH_ZERO);
@@ -42,7 +45,7 @@ void home() {
   rear_right_low.write(REAR_RIGHT_LOW_ZERO);
 }
 
-void walk(int i) {
+void walk_forward(int i) {
   switch (i) {
     case 0:
       front_right_high.write(FRONT_RIGHT_HIGH_ZERO);
@@ -63,7 +66,7 @@ void walk(int i) {
     case 2:
       front_right_low.write(FRONT_RIGHT_LOW_ZERO + WALK_DEGREE);
       front_right_high.write(FRONT_RIGHT_HIGH_ZERO + WALK_DEGREE);
-    
+
       rear_left_low.write(REAR_LEFT_LOW_ZERO + WALK_DEGREE);
       rear_left_high.write(REAR_LEFT_HIGH_ZERO - WALK_DEGREE);
 
@@ -81,12 +84,12 @@ void walk(int i) {
 void setup() {
   Serial.begin(115200);
 
-  /*WiFi.mode(WIFI_AP);
-  WiFi.softAP("WebJoy");
+  WiFi.mode(WIFI_AP);
+  WiFi.softAP("Bulkarezik");
 
   server.begin();
   dns.start(53, "*", WiFi.softAPIP());
-    */
+
   front_left_high.attach(32);
   front_left_low.attach(33);
   front_right_high.attach(25);
@@ -95,7 +98,7 @@ void setup() {
   rear_left_low.attach(14);
   rear_right_high.attach(12);
   rear_right_low.attach(13);
-  /*
+
   server.onRequest([](ghttp::ServerBase::Request req) {
     switch (req.path().hash()) {
       case SH("/script.js"):
@@ -108,16 +111,8 @@ void setup() {
 
       case SH("/xy"):
         {
-          int x = req.param("x");
-          int y = req.param("y");
-          front_left_high.write(0);
-          front_left_low.write(0);
-          front_right_high.write(0);
-          front_right_low.write(0);
-          rear_left_high.write(0);
-          rear_left_low.write(0);
-          rear_right_high.write(0);
-          rear_right_low.write(0);
+          x = req.param("x");
+          y = req.param("y");
         }
         break;
 
@@ -126,19 +121,23 @@ void setup() {
         break;
     }
   });
-  */
+
   home();
   delay(1000);
 }
-int i = 0;
+
 void loop() {
-  //server.tick();
-  //dns.processNextRequest();
+  server.tick();
+  dns.processNextRequest();
+
   static uint32_t tmr;
-  if (millis() - tmr >= 300) {
+  if (millis() - tmr >= map(y, 30, 255, 400, 150)) {
     tmr = millis();
     i++;
     if (i > 3) i = 0;
   }
-  //walk(i);
+  if(y>x || y>-x){
+    walk_forward(i);
+  }
+  
 }
