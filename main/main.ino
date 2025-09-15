@@ -28,14 +28,14 @@ Servo rear_right_low;
 #define REAR_RIGHT_HIGH_ZERO 90
 #define REAR_RIGHT_LOW_ZERO 120
 
-#define WALK_DEGREE 35
+#define WALK_DEGREE 45
 #define LEG_UP_DEGREE 60
 #define ROTATE_DEGREE 35
 
 int i = 0;
 int x, y;
 
-void home() {
+void home() { //TODO
   if (front_left_high.read() != FRONT_LEFT_HIGH_ZERO){
     front_left_low.write(FRONT_LEFT_LOW_ZERO - LEG_UP_DEGREE);
     front_left_high.write(FRONT_LEFT_HIGH_ZERO);
@@ -98,6 +98,42 @@ void walk_forward(int i) {
 
       rear_left_low.write(REAR_LEFT_LOW_ZERO + LEG_UP_DEGREE);
       rear_left_high.write(REAR_LEFT_HIGH_ZERO - WALK_DEGREE);
+
+      front_left_high.write(FRONT_LEFT_HIGH_ZERO);
+      rear_right_high.write(REAR_RIGHT_HIGH_ZERO);
+      break;
+
+    case 3:
+      rear_left_low.write(REAR_LEFT_LOW_ZERO);
+      front_right_low.write(FRONT_RIGHT_LOW_ZERO);
+      break;
+  }
+}
+
+void walk_backward(int i) {
+  switch (i) {
+    case 0:
+      front_right_high.write(FRONT_RIGHT_HIGH_ZERO);
+      rear_left_high.write(REAR_LEFT_HIGH_ZERO);
+
+      front_left_low.write(FRONT_LEFT_LOW_ZERO - LEG_UP_DEGREE);
+      front_left_high.write(FRONT_LEFT_HIGH_ZERO + WALK_DEGREE);
+
+      rear_right_low.write(REAR_RIGHT_LOW_ZERO - LEG_UP_DEGREE);
+      rear_right_high.write(REAR_RIGHT_HIGH_ZERO - WALK_DEGREE);
+      break;
+
+    case 1:
+      rear_right_low.write(REAR_RIGHT_LOW_ZERO);
+      front_left_low.write(FRONT_LEFT_LOW_ZERO);
+      break;
+
+    case 2:
+      front_right_low.write(FRONT_RIGHT_LOW_ZERO + LEG_UP_DEGREE);
+      front_right_high.write(FRONT_RIGHT_HIGH_ZERO - WALK_DEGREE);
+
+      rear_left_low.write(REAR_LEFT_LOW_ZERO + LEG_UP_DEGREE);
+      rear_left_high.write(REAR_LEFT_HIGH_ZERO + WALK_DEGREE);
 
       front_left_high.write(FRONT_LEFT_HIGH_ZERO);
       rear_right_high.write(REAR_RIGHT_HIGH_ZERO);
@@ -240,6 +276,15 @@ void loop() {
     }
     walk_forward(i);
   }
+  if(y<x && y<-x){
+    static uint32_t tmr;
+    if (millis() - tmr >= map(y, 30, 255, 400, 150)) {
+      tmr = millis();
+      i++;
+      if (i > 3) i = 0;
+    }
+    walk_backward(i);
+  }
   if (y < x && y > -x) {
     static uint32_t tmr;
     if (millis() - tmr >= map(x, 30, 255, 400, 150)) {
@@ -259,7 +304,7 @@ void loop() {
     rotate_anticlockwise(i);
   }
 
-  //if(y<x && y<-x){} TODO
+  
   static uint32_t tmr;
   if (x==0 && y==0 && millis() - tmr >100){
     tmr = millis();
