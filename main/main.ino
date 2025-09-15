@@ -39,7 +39,7 @@ void home() {
   if (front_left_high.read() != FRONT_LEFT_HIGH_ZERO){
     front_left_low.write(FRONT_LEFT_LOW_ZERO - LEG_UP_DEGREE);
     front_left_high.write(FRONT_LEFT_HIGH_ZERO);
-    front_left_low.write(FRONT_LEFT_LOW_ZERO)
+    front_left_low.write(FRONT_LEFT_LOW_ZERO);
   }
   else{
     if (front_left_low.read() != FRONT_LEFT_LOW_ZERO) front_left_low.write(FRONT_LEFT_LOW_ZERO);
@@ -48,7 +48,7 @@ void home() {
   if (front_right_high.read() != FRONT_RIGHT_HIGH_ZERO){
     front_right_low.write(FRONT_RIGHT_LOW_ZERO - LEG_UP_DEGREE);
     front_right_high.write(FRONT_RIGHT_HIGH_ZERO);
-    front_right_low.write(FRONT_RIGHT_LOW_ZERO)
+    front_right_low.write(FRONT_RIGHT_LOW_ZERO);
   }
   else{
     if (front_right_low.read() != FRONT_RIGHT_LOW_ZERO) front_right_low.write(FRONT_RIGHT_LOW_ZERO);
@@ -57,7 +57,7 @@ void home() {
   if (rear_left_high.read() != REAR_LEFT_HIGH_ZERO){
     rear_left_low.write(REAR_LEFT_LOW_ZERO + LEG_UP_DEGREE);
     rear_left_high.write(REAR_LEFT_HIGH_ZERO);
-    rear_left_low.write(REAR_LEFT_LOW_ZERO)
+    rear_left_low.write(REAR_LEFT_LOW_ZERO);
   }
   else{
     if (rear_left_low.read() != REAR_LEFT_LOW_ZERO) rear_left_low.write(REAR_LEFT_LOW_ZERO);
@@ -66,7 +66,7 @@ void home() {
   if (rear_right_high.read() != REAR_RIGHT_HIGH_ZERO){
     rear_right_low.write(REAR_RIGHT_LOW_ZERO + LEG_UP_DEGREE);
     rear_right_high.write(REAR_RIGHT_HIGH_ZERO);
-    rear_right_low.write(REAR_RIGHT_LOW_ZERO)
+    rear_right_low.write(REAR_RIGHT_LOW_ZERO);
   }
   else{
     if (rear_right_low.read() != REAR_RIGHT_LOW_ZERO) rear_right_low.write(REAR_RIGHT_LOW_ZERO);
