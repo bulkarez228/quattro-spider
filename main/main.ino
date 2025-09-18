@@ -1,12 +1,21 @@
 #include <ESP32Servo.h>
 #include <Arduino.h>
-#include <WiFi.h>
-#include <GyverHTTP.h>
-#include <DNSServer.h>
-#include "webjoy.h"
+#define GH_INCLUDE_PORTAL
+#include <GyverHub.h>
 
-ghttp::Server<WiFiServer, WiFiClient> server(80);
-DNSServer dns;
+GyverHub hub;
+
+gh::Pos pos;
+
+// билдер
+void build(gh::Builder& b) {
+  if (b.beginRow()) {
+    // второй в loop
+    // не возвращать в центр, значения по экспоненте
+    b.Joystick(&pos, 0, 1).color(gh::Colors::Red);
+    b.endRow();
+  }
+}
 
 
 
@@ -33,45 +42,39 @@ Servo rear_right_low;
 #define ROTATE_DEGREE 35
 
 int i = 0;
-int x, y;
 
-void home() { //TODO
-  if (front_left_high.read() != FRONT_LEFT_HIGH_ZERO){
+void home() {  //TODO
+  if (front_left_high.read() != FRONT_LEFT_HIGH_ZERO) {
     front_left_low.write(FRONT_LEFT_LOW_ZERO - LEG_UP_DEGREE);
     front_left_high.write(FRONT_LEFT_HIGH_ZERO);
     front_left_low.write(FRONT_LEFT_LOW_ZERO);
-  }
-  else{
+  } else {
     if (front_left_low.read() != FRONT_LEFT_LOW_ZERO) front_left_low.write(FRONT_LEFT_LOW_ZERO);
   }
-  
-  if (front_right_high.read() != FRONT_RIGHT_HIGH_ZERO){
+
+  if (front_right_high.read() != FRONT_RIGHT_HIGH_ZERO) {
     front_right_low.write(FRONT_RIGHT_LOW_ZERO - LEG_UP_DEGREE);
     front_right_high.write(FRONT_RIGHT_HIGH_ZERO);
     front_right_low.write(FRONT_RIGHT_LOW_ZERO);
-  }
-  else{
+  } else {
     if (front_right_low.read() != FRONT_RIGHT_LOW_ZERO) front_right_low.write(FRONT_RIGHT_LOW_ZERO);
   }
-  
-  if (rear_left_high.read() != REAR_LEFT_HIGH_ZERO){
+
+  if (rear_left_high.read() != REAR_LEFT_HIGH_ZERO) {
     rear_left_low.write(REAR_LEFT_LOW_ZERO + LEG_UP_DEGREE);
     rear_left_high.write(REAR_LEFT_HIGH_ZERO);
     rear_left_low.write(REAR_LEFT_LOW_ZERO);
-  }
-  else{
+  } else {
     if (rear_left_low.read() != REAR_LEFT_LOW_ZERO) rear_left_low.write(REAR_LEFT_LOW_ZERO);
   }
 
-  if (rear_right_high.read() != REAR_RIGHT_HIGH_ZERO){
+  if (rear_right_high.read() != REAR_RIGHT_HIGH_ZERO) {
     rear_right_low.write(REAR_RIGHT_LOW_ZERO + LEG_UP_DEGREE);
     rear_right_high.write(REAR_RIGHT_HIGH_ZERO);
     rear_right_low.write(REAR_RIGHT_LOW_ZERO);
-  }
-  else{
+  } else {
     if (rear_right_low.read() != REAR_RIGHT_LOW_ZERO) rear_right_low.write(REAR_RIGHT_LOW_ZERO);
   }
-
 }
 
 void walk_forward(int i) {
@@ -221,12 +224,6 @@ void rotate_anticlockwise(int i) {
 void setup() {
   Serial.begin(115200);
 
-  WiFi.mode(WIFI_AP);
-  WiFi.softAP("Bulkarezik");
-
-  server.begin();
-  dns.start(53, "*", WiFi.softAPIP());
-
   front_left_high.attach(32);
   front_left_low.attach(33);
   front_right_high.attach(25);
@@ -235,7 +232,15 @@ void setup() {
   rear_left_low.attach(14);
   rear_right_high.attach(12);
   rear_right_low.attach(13);
+  
+  WiFi.mode(WIFI_AP);
+  WiFi.softAP("Bulkarezik");
+  Serial.println(WiFi.softAPIP());
+  hub.config(F("MyDevices"), F("ESP"));
+  hub.onBuild(build);
+  hub.begin();
 
+  /*
   server.onRequest([](ghttp::ServerBase::Request req) {
     switch (req.path().hash()) {
       case SH("/script.js"):
@@ -248,8 +253,8 @@ void setup() {
 
       case SH("/xy"):
         {
-          x = req.param("x");
-          y = req.param("y");
+          pos.x = req.param("pos.x");
+          pos.y = req.param("pos.y");
         }
         break;
 
@@ -258,45 +263,45 @@ void setup() {
         break;
     }
   });
+  */
 
   home();
   delay(1000);
 }
 
 void loop() {
-  server.tick();
-  dns.processNextRequest();
+  hub.tick();
 
-  if (y > x && y > -x) {
+  if (pos.y > pos.x && pos.y > -pos.x) {
     static uint32_t tmr;
-    if (millis() - tmr >= map(y, 30, 255, 400, 150)) {
+    if (millis() - tmr >= map(pos.y, 30, 255, 400, 150)) {
       tmr = millis();
       i++;
       if (i > 3) i = 0;
     }
     walk_forward(i);
   }
-  if(y<x && y<-x){
+  if (pos.y < pos.x && pos.y < -pos.x) {
     static uint32_t tmr;
-    if (millis() - tmr >= map(y, 30, 255, 400, 150)) {
+    if (millis() - tmr >= map(pos.y, 30, 255, 400, 150)) {
       tmr = millis();
       i++;
       if (i > 3) i = 0;
     }
     walk_backward(i);
   }
-  if (y < x && y > -x) {
+  if (pos.y < pos.x && pos.y > -pos.x) {
     static uint32_t tmr;
-    if (millis() - tmr >= map(x, 30, 255, 400, 150)) {
+    if (millis() - tmr >= map(pos.x, 30, 255, 400, 150)) {
       tmr = millis();
       i++;
       if (i > 3) i = 0;
     }
     rotate_clockwise(i);
   }
-  if (y > x && y < -x) {
+  if (pos.y > pos.x && pos.y < -pos.x) {
     static uint32_t tmr;
-    if (millis() - tmr >= map(-x, 30, 255, 400, 150)) {
+    if (millis() - tmr >= map(-pos.x, 30, 255, 400, 150)) {
       tmr = millis();
       i++;
       if (i > 3) i = 0;
@@ -304,11 +309,9 @@ void loop() {
     rotate_anticlockwise(i);
   }
 
-  
   static uint32_t tmr;
-  if (x==0 && y==0 && millis() - tmr >100){
+  if (pos.x == 0 && pos.y == 0 && millis() - tmr > 100) {
     tmr = millis();
     home();
   }
-  
 }
