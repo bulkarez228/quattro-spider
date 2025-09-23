@@ -16,6 +16,7 @@ Servo rear_left_low;
 Servo rear_right_high;
 Servo rear_right_low;
 
+
 int minUs = 500;
 int maxUs = 2400;
 
@@ -42,11 +43,16 @@ bool idk_mode;
 #define LEG_UP_DEGREE 60
 #define ROTATE_DEGREE 35
 #define MAX_DEVIATION 2
-#define HELLO_MODE_TIME 5000
+#define HELLO_MODE_TIME 3000
 #define HAPPY_MODE_TIME 5000
-#define FORCED_HOME_DELAY_TIME 40
+#define DANCE_MODE_TIME 5000
+#define COME_TO_ME_MODE_TIME 5000
+#define ARM_UP_MODE_TIME 5000
+#define IDK_MODE_TIME 5000
+#define FORCED_HOME_DELAY_TIME 30
 
 int i = 0;
+static uint32_t out;
 
 void soft_home() {  //TODO
   if (front_left_high.read() < FRONT_LEFT_HIGH_ZERO - MAX_DEVIATION || front_left_high.read() > FRONT_LEFT_HIGH_ZERO + MAX_DEVIATION) {
@@ -249,24 +255,24 @@ void rotate_anticlockwise(int i) {
 void hello(int i) {
   switch (i) {
     case 0:
-      rear_right_low.write(REAR_RIGHT_LOW_ZERO - LEG_UP_DEGREE);
+      front_left_low.write(FRONT_LEFT_LOW_ZERO - 70);
+      rear_right_low.write(REAR_RIGHT_LOW_ZERO - 90);
       front_left_high.write(FRONT_LEFT_HIGH_ZERO + 45);
-      front_left_low.write(FRONT_LEFT_LOW_ZERO - 155);
       break;
     case 1:
-      rear_right_low.write(REAR_RIGHT_LOW_ZERO - LEG_UP_DEGREE);
+      front_left_low.write(FRONT_LEFT_LOW_ZERO - 160);
+      rear_right_low.write(REAR_RIGHT_LOW_ZERO - 90);
       front_left_high.write(FRONT_LEFT_HIGH_ZERO + 45);
-      front_left_low.write(FRONT_LEFT_LOW_ZERO - 70);
       break;
     case 2:
-      rear_right_low.write(REAR_RIGHT_LOW_ZERO - LEG_UP_DEGREE);
+      front_left_low.write(FRONT_LEFT_LOW_ZERO - 70);
+      rear_right_low.write(REAR_RIGHT_LOW_ZERO - 90);
       front_left_high.write(FRONT_LEFT_HIGH_ZERO + 45);
-      front_left_low.write(FRONT_LEFT_LOW_ZERO - 155);
       break;
     case 3:
-      rear_right_low.write(REAR_RIGHT_LOW_ZERO - LEG_UP_DEGREE);
+      front_left_low.write(FRONT_LEFT_LOW_ZERO - 160);
+      rear_right_low.write(REAR_RIGHT_LOW_ZERO - 90);
       front_left_high.write(FRONT_LEFT_HIGH_ZERO + 45);
-      front_left_low.write(FRONT_LEFT_LOW_ZERO - 70);
       break;
   }
 }
@@ -316,19 +322,190 @@ void happy(int i) {
   }
 }
 
+void dance(int i) {
+  switch (i) {
+    case 0:
+      front_left_high.write(FRONT_LEFT_HIGH_ZERO - 45);
+      front_right_high.write(FRONT_RIGHT_HIGH_ZERO + 45);
+      rear_left_high.write(REAR_LEFT_HIGH_ZERO + 45);
+      rear_right_high.write(REAR_RIGHT_HIGH_ZERO - 45);
+
+      front_left_low.write(FRONT_LEFT_LOW_ZERO - 45);
+      front_right_low.write(FRONT_RIGHT_LOW_ZERO - 45);
+      rear_left_low.write(REAR_LEFT_LOW_ZERO - 45);
+      rear_right_low.write(REAR_RIGHT_LOW_ZERO - 45);
+      break;
+    case 1:
+      front_left_high.write(FRONT_LEFT_HIGH_ZERO - 45);
+      front_right_high.write(FRONT_RIGHT_HIGH_ZERO + 45);
+      rear_left_high.write(REAR_LEFT_HIGH_ZERO + 45);
+      rear_right_high.write(REAR_RIGHT_HIGH_ZERO - 45);
+
+      front_left_low.write(FRONT_LEFT_LOW_ZERO + 45);
+      front_right_low.write(FRONT_RIGHT_LOW_ZERO + 45);
+      rear_left_low.write(REAR_LEFT_LOW_ZERO + 45);
+      rear_right_low.write(REAR_RIGHT_LOW_ZERO + 45);
+      break;
+    case 2:
+      front_left_high.write(FRONT_LEFT_HIGH_ZERO - 45);
+      front_right_high.write(FRONT_RIGHT_HIGH_ZERO + 45);
+      rear_left_high.write(REAR_LEFT_HIGH_ZERO + 45);
+      rear_right_high.write(REAR_RIGHT_HIGH_ZERO - 45);
+
+      front_left_low.write(FRONT_LEFT_LOW_ZERO - 45);
+      front_right_low.write(FRONT_RIGHT_LOW_ZERO - 45);
+      rear_left_low.write(REAR_LEFT_LOW_ZERO - 45);
+      rear_right_low.write(REAR_RIGHT_LOW_ZERO - 45);
+      break;
+    case 3:
+      front_left_high.write(FRONT_LEFT_HIGH_ZERO - 45);
+      front_right_high.write(FRONT_RIGHT_HIGH_ZERO + 45);
+      rear_left_high.write(REAR_LEFT_HIGH_ZERO + 45);
+      rear_right_high.write(REAR_RIGHT_HIGH_ZERO - 45);
+
+      front_left_low.write(FRONT_LEFT_LOW_ZERO + 45);
+      front_right_low.write(FRONT_RIGHT_LOW_ZERO + 45);
+      rear_left_low.write(REAR_LEFT_LOW_ZERO + 45);
+      rear_right_low.write(REAR_RIGHT_LOW_ZERO + 45);
+      break;
+  }
+}
+
+void come_to_me(int i) {
+  switch (i) {
+    case 0:
+      rear_right_low.write(REAR_RIGHT_LOW_ZERO - 90);
+      front_left_high.write(FRONT_LEFT_HIGH_ZERO - 45);
+      front_left_low.write(FRONT_LEFT_LOW_ZERO - 160);
+      break;
+    case 1:
+      rear_right_low.write(REAR_RIGHT_LOW_ZERO - 90);
+      front_left_high.write(FRONT_LEFT_HIGH_ZERO - 45);
+      front_left_low.write(FRONT_LEFT_LOW_ZERO - 70);
+      break;
+    case 2:
+      rear_right_low.write(REAR_RIGHT_LOW_ZERO - 90);
+      front_left_high.write(FRONT_LEFT_HIGH_ZERO - 45);
+      front_left_low.write(FRONT_LEFT_LOW_ZERO - 160);
+      break;
+    case 3:
+      rear_right_low.write(REAR_RIGHT_LOW_ZERO - 90);
+      front_left_high.write(FRONT_LEFT_HIGH_ZERO - 45);
+      front_left_low.write(FRONT_LEFT_LOW_ZERO - 70);
+      break;
+  }
+}
+
+void arm_up(int i) {
+
+}
+
+void idk(int i) {
+  switch (i) {
+    case 0:
+      front_left_high.write(FRONT_LEFT_HIGH_ZERO + 45);
+      front_right_high.write(FRONT_RIGHT_HIGH_ZERO - 45);
+      rear_left_high.write(REAR_LEFT_HIGH_ZERO - 45);
+      rear_right_high.write(REAR_RIGHT_HIGH_ZERO + 45);
+
+      front_left_low.write(0);
+      front_right_low.write(180);
+      rear_left_low.write(0);
+      rear_right_low.write(180);
+      break;
+    case 1:
+      front_left_high.write(FRONT_LEFT_HIGH_ZERO + 45);
+      front_right_high.write(FRONT_RIGHT_HIGH_ZERO - 45);
+      rear_left_high.write(REAR_LEFT_HIGH_ZERO - 45);
+      rear_right_high.write(REAR_RIGHT_HIGH_ZERO + 45);
+
+      front_left_low.write(0);
+      front_right_low.write(180);
+      rear_left_low.write(0);
+      rear_right_low.write(180);
+      break;
+    case 2:
+      front_left_high.write(FRONT_LEFT_HIGH_ZERO + 45);
+      front_right_high.write(FRONT_RIGHT_HIGH_ZERO - 45);
+      rear_left_high.write(REAR_LEFT_HIGH_ZERO - 45);
+      rear_right_high.write(REAR_RIGHT_HIGH_ZERO + 45);
+
+      front_left_low.write(0);
+      front_right_low.write(180);
+      rear_left_low.write(0);
+      rear_right_low.write(180);
+      break;
+    case 3:
+      front_left_high.write(FRONT_LEFT_HIGH_ZERO + 45);
+      front_right_high.write(FRONT_RIGHT_HIGH_ZERO - 45);
+      rear_left_high.write(REAR_LEFT_HIGH_ZERO - 45);
+      rear_right_high.write(REAR_RIGHT_HIGH_ZERO + 45);
+
+      front_left_low.write(0);
+      front_right_low.write(180);
+      rear_left_low.write(0);
+      rear_right_low.write(180);
+      break;
+  }
+}
+
 void set_hello() {
   if (!hello_mode) {
+    forced_home();
     set_all_modes_false();
     hello_mode = true;
     i = 0;
+    out = millis();
   }
 }
 
 void set_happy() {
-  if (!happy_mode){
-  set_all_modes_false();
-  happy_mode = true;
-  i = 0;
+  if (!happy_mode) {
+    forced_home();
+    set_all_modes_false();
+    happy_mode = true;
+    i = 0;
+    out = millis();
+  }
+}
+
+void set_dance() {
+  if (!dance_mode) {
+    forced_home();
+    set_all_modes_false();
+    dance_mode = true;
+    i = 0;
+    out = millis();
+  }
+}
+
+void set_come_to_me() {
+  if (!come_to_me_mode) {
+    forced_home();
+    set_all_modes_false();
+    come_to_me_mode = true;
+    i = 0;
+    out = millis();
+  }
+}
+
+void set_arm_up() {
+  if (!arm_up_mode) {
+    forced_home();
+    set_all_modes_false();
+    arm_up_mode = true;
+    i = 0;
+    out = millis();
+  }
+}
+
+void set_idk() {
+  if (!idk_mode) {
+    forced_home();
+    set_all_modes_false();
+    idk_mode = true;
+    i = 0;
+    out = millis();
   }
 }
 
@@ -352,17 +529,17 @@ void build(gh::Builder& b) {
   }
   if (b.beginRow()) {
     b.Button().label("hello").attach(set_hello);
-    b.Button().label("dance").attach(&dance_mode);
+    b.Button().label("dance").attach(set_dance);
     b.endRow();
   }
   if (b.beginRow()) {
-    b.Button().label("come to me").attach(&come_to_me_mode);
-    b.Button().label("arm up").attach(&arm_up_mode);
+    b.Button().label("come to me").attach(set_come_to_me);
+    b.Button().label("arm up").attach(set_arm_up);
     b.endRow();
   }
   if (b.beginRow()) {
     b.Button().label("happy").attach(set_happy);
-    b.Button().label("idk").attach(&idk_mode);
+    b.Button().label("idk").attach(set_idk);
     b.endRow();
   }
 }
@@ -456,12 +633,10 @@ void loop() {
       i++;
       if (i > 3) i = 0;
     }
-    static gh::Timer out(HELLO_MODE_TIME);
-    if (out) {
+    if (millis() - out > HELLO_MODE_TIME) {
       i = 0;
       hello_mode = false;
       if (!is_in_mode()) forced_home();
-      Serial.println("OUT");
     }
   }
 
@@ -472,10 +647,51 @@ void loop() {
       i++;
       if (i > 3) i = 0;
     }
-    static gh::Timer out(HAPPY_MODE_TIME);
-    if (out) {
+    if (millis() - out > HAPPY_MODE_TIME) {
       i = 0;
       happy_mode = false;
+      if (!is_in_mode()) forced_home();
+    }
+  }
+
+  if (dance_mode) {
+    dance(i);
+    static gh::Timer tmr(400);
+    if (tmr) {
+      i++;
+      if (i > 3) i = 0;
+    }
+    if (millis() - out > DANCE_MODE_TIME) {
+      i = 0;
+      dance_mode = false;
+      if (!is_in_mode()) forced_home();
+    }
+  }
+
+  if (come_to_me_mode) {
+    come_to_me(i);
+    static gh::Timer tmr(200);
+    if (tmr) {
+      i++;
+      if (i > 3) i = 0;
+    }
+    if (millis() - out > COME_TO_ME_MODE_TIME) {
+      i = 0;
+      come_to_me_mode = false;
+      if (!is_in_mode()) forced_home();
+    }
+  }
+
+  if (idk_mode) {
+    come_to_me(i);
+    static gh::Timer tmr(400);
+    if (tmr) {
+      i++;
+      if (i > 3) i = 0;
+    }
+    if (millis() - out > IDK_MODE_TIME) {
+      i = 0;
+      idk_mode = false;
       if (!is_in_mode()) forced_home();
     }
   }
@@ -483,7 +699,6 @@ void loop() {
   static uint32_t tmr;
   if (pos.x == 0 && pos.y == 0 && millis() - tmr > 100 && !is_in_mode()) {
     tmr = millis();
-    Serial.println(front_left_low.read());
-    soft_home();
+    forced_home();
   }
 }
