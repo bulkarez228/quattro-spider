@@ -2,10 +2,14 @@
 #include <Arduino.h>
 #define GH_INCLUDE_PORTAL
 #include <GyverHub.h>
+#include <GyverOLED.h>
+
+
+GyverOLED<SSD1306_128x64> oled(0x3c);
 
 GyverHub hub;
-
 gh::Pos pos;
+
 
 Servo front_left_high;
 Servo front_left_low;
@@ -54,7 +58,14 @@ bool idk_mode;
 int i = 0;
 static uint32_t out;
 
-void soft_home() {  //TODO
+const uint8_t bitmap_32x32[] PROGMEM = {
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x80, 0xC0, 0xC0, 0xE0, 0xF0, 0x70, 0x70, 0x30, 0x30, 0x30, 0x20, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xC0, 0xE0, 0xF0, 0xF0, 0x70, 0x30, 0x30, 0x20, 0x00, 0x00,
+  0x00, 0x30, 0x78, 0xFC, 0x7F, 0x3F, 0x0F, 0x0F, 0x1F, 0x3C, 0x78, 0xF0, 0xE0, 0xC0, 0x80, 0x80, 0x80, 0x40, 0xE0, 0xF0, 0xF8, 0xFC, 0xFF, 0x7F, 0x33, 0x13, 0x1E, 0x1C, 0x1C, 0x0E, 0x07, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80, 0xC0, 0xE0, 0xF0, 0xF9, 0xF7, 0xEF, 0x5F, 0x3F, 0x7F, 0xFE, 0xFD, 0xFB, 0xF1, 0xE0, 0xC0, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x0C, 0x1E, 0x33, 0x33, 0x1F, 0x0F, 0x07, 0x03, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x03, 0x07, 0x0F, 0x1F, 0x3F, 0x1F, 0x0E, 0x04, 0x00, 0x00, 0x00, 0x00,
+};
+
+void soft_home() {
   if (front_left_high.read() < FRONT_LEFT_HIGH_ZERO - MAX_DEVIATION || front_left_high.read() > FRONT_LEFT_HIGH_ZERO + MAX_DEVIATION) {
     front_left_low.write(FRONT_LEFT_LOW_ZERO - LEG_UP_DEGREE);
     front_left_high.write(FRONT_LEFT_HIGH_ZERO);
@@ -396,55 +407,72 @@ void come_to_me(int i) {
   }
 }
 
-void arm_up(int i) {
-
+void arm_up(int i) { 
+  switch (i) {
+    case 0:
+      rear_right_low.write(REAR_RIGHT_LOW_ZERO - 90);
+      front_left_high.write(FRONT_LEFT_HIGH_ZERO - 45);
+      front_left_low.write(FRONT_LEFT_LOW_ZERO - 160);
+      break;
+    case 1:
+      rear_right_low.write(REAR_RIGHT_LOW_ZERO - 90);
+      front_left_high.write(FRONT_LEFT_HIGH_ZERO - 45);
+      front_left_low.write(FRONT_LEFT_LOW_ZERO - 160);
+      break;
+    case 2:
+      rear_right_low.write(REAR_RIGHT_LOW_ZERO - 90);
+      front_left_high.write(FRONT_LEFT_HIGH_ZERO - 45);
+      front_left_low.write(FRONT_LEFT_LOW_ZERO - 160);
+      break;
+    case 3:
+      rear_right_low.write(REAR_RIGHT_LOW_ZERO - 90);
+      front_left_high.write(FRONT_LEFT_HIGH_ZERO - 45);
+      front_left_low.write(FRONT_LEFT_LOW_ZERO - 160);
+      break;
+  }
 }
 
 void idk(int i) {
   switch (i) {
     case 0:
+      front_left_low.write(FRONT_LEFT_LOW_ZERO - 160);
+      front_right_low.write(FRONT_RIGHT_LOW_ZERO + 160);
+      rear_left_low.write(REAR_LEFT_LOW_ZERO + 160);
+      rear_right_low.write(REAR_RIGHT_LOW_ZERO - 160);
       front_left_high.write(FRONT_LEFT_HIGH_ZERO + 45);
       front_right_high.write(FRONT_RIGHT_HIGH_ZERO - 45);
       rear_left_high.write(REAR_LEFT_HIGH_ZERO - 45);
       rear_right_high.write(REAR_RIGHT_HIGH_ZERO + 45);
-
-      front_left_low.write(0);
-      front_right_low.write(180);
-      rear_left_low.write(0);
-      rear_right_low.write(180);
       break;
     case 1:
+      front_left_low.write(FRONT_LEFT_LOW_ZERO - 160);
+      front_right_low.write(FRONT_RIGHT_LOW_ZERO + 160);
+      rear_left_low.write(REAR_LEFT_LOW_ZERO + 160);
+      rear_right_low.write(REAR_RIGHT_LOW_ZERO - 160);
       front_left_high.write(FRONT_LEFT_HIGH_ZERO + 45);
       front_right_high.write(FRONT_RIGHT_HIGH_ZERO - 45);
       rear_left_high.write(REAR_LEFT_HIGH_ZERO - 45);
       rear_right_high.write(REAR_RIGHT_HIGH_ZERO + 45);
-
-      front_left_low.write(0);
-      front_right_low.write(180);
-      rear_left_low.write(0);
-      rear_right_low.write(180);
       break;
     case 2:
+      front_left_low.write(FRONT_LEFT_LOW_ZERO - 160);
+      front_right_low.write(FRONT_RIGHT_LOW_ZERO + 160);
+      rear_left_low.write(REAR_LEFT_LOW_ZERO + 160);
+      rear_right_low.write(REAR_RIGHT_LOW_ZERO - 160);
       front_left_high.write(FRONT_LEFT_HIGH_ZERO + 45);
       front_right_high.write(FRONT_RIGHT_HIGH_ZERO - 45);
       rear_left_high.write(REAR_LEFT_HIGH_ZERO - 45);
       rear_right_high.write(REAR_RIGHT_HIGH_ZERO + 45);
-
-      front_left_low.write(0);
-      front_right_low.write(180);
-      rear_left_low.write(0);
-      rear_right_low.write(180);
       break;
     case 3:
+      front_left_low.write(FRONT_LEFT_LOW_ZERO - 160);
+      front_right_low.write(FRONT_RIGHT_LOW_ZERO + 160);
+      rear_left_low.write(REAR_LEFT_LOW_ZERO + 160);
+      rear_right_low.write(REAR_RIGHT_LOW_ZERO - 160);
       front_left_high.write(FRONT_LEFT_HIGH_ZERO + 45);
       front_right_high.write(FRONT_RIGHT_HIGH_ZERO - 45);
       rear_left_high.write(REAR_LEFT_HIGH_ZERO - 45);
       rear_right_high.write(REAR_RIGHT_HIGH_ZERO + 45);
-
-      front_left_low.write(0);
-      front_right_low.write(180);
-      rear_left_low.write(0);
-      rear_right_low.write(180);
       break;
   }
 }
@@ -575,6 +603,11 @@ void setup() {
   hub.config(F("MyDevices"), F("ESP"));
   hub.onBuild(build);
   hub.begin();
+  
+  oled.init();
+  oled.clear();
+  oled.drawBitmap(90, 10, bitmap_32x32, 32, 32);
+  oled.update();
 
   soft_home();
   delay(1000);
@@ -682,8 +715,22 @@ void loop() {
     }
   }
 
+  if (arm_up_mode){
+    arm_up(i);
+    static gh::Timer tmr(200);
+    if (tmr) {
+      i++;
+      if (i > 3) i = 0;
+    }
+    if (millis() - out > ARM_UP_MODE_TIME) {
+      i = 0;
+      arm_up_mode = false;
+      if (!is_in_mode()) forced_home();
+    }
+  }
+
   if (idk_mode) {
-    come_to_me(i);
+    idk(i);
     static gh::Timer tmr(400);
     if (tmr) {
       i++;
