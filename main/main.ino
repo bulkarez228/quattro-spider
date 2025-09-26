@@ -3,7 +3,7 @@
 #define GH_INCLUDE_PORTAL
 #include <GyverHub.h>
 #include <GyverOLED.h>
-
+#include <bitmaps.h>
 
 GyverOLED<SSD1306_128x64> oled(0x3c);
 
@@ -58,12 +58,6 @@ bool idk_mode;
 int i = 0;
 static uint32_t out;
 
-const uint8_t bitmap_32x32[] PROGMEM = {
-  0x00, 0x00, 0x00, 0x00, 0x00, 0x80, 0xC0, 0xC0, 0xE0, 0xF0, 0x70, 0x70, 0x30, 0x30, 0x30, 0x20, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xC0, 0xE0, 0xF0, 0xF0, 0x70, 0x30, 0x30, 0x20, 0x00, 0x00,
-  0x00, 0x30, 0x78, 0xFC, 0x7F, 0x3F, 0x0F, 0x0F, 0x1F, 0x3C, 0x78, 0xF0, 0xE0, 0xC0, 0x80, 0x80, 0x80, 0x40, 0xE0, 0xF0, 0xF8, 0xFC, 0xFF, 0x7F, 0x33, 0x13, 0x1E, 0x1C, 0x1C, 0x0E, 0x07, 0x00,
-  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80, 0xC0, 0xE0, 0xF0, 0xF9, 0xF7, 0xEF, 0x5F, 0x3F, 0x7F, 0xFE, 0xFD, 0xFB, 0xF1, 0xE0, 0xC0, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-  0x00, 0x00, 0x00, 0x00, 0x00, 0x0C, 0x1E, 0x33, 0x33, 0x1F, 0x0F, 0x07, 0x03, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x03, 0x07, 0x0F, 0x1F, 0x3F, 0x1F, 0x0E, 0x04, 0x00, 0x00, 0x00, 0x00,
-};
 
 void soft_home() {
   if (front_left_high.read() < FRONT_LEFT_HIGH_ZERO - MAX_DEVIATION || front_left_high.read() > FRONT_LEFT_HIGH_ZERO + MAX_DEVIATION) {
@@ -407,7 +401,7 @@ void come_to_me(int i) {
   }
 }
 
-void arm_up(int i) { 
+void arm_up(int i) {
   switch (i) {
     case 0:
       rear_right_low.write(REAR_RIGHT_LOW_ZERO - 90);
@@ -481,6 +475,7 @@ void set_hello() {
   if (!hello_mode) {
     forced_home();
     set_all_modes_false();
+    set_hello_face();
     hello_mode = true;
     i = 0;
     out = millis();
@@ -491,6 +486,7 @@ void set_happy() {
   if (!happy_mode) {
     forced_home();
     set_all_modes_false();
+    set_happy_face();
     happy_mode = true;
     i = 0;
     out = millis();
@@ -501,6 +497,7 @@ void set_dance() {
   if (!dance_mode) {
     forced_home();
     set_all_modes_false();
+    set_dance_face();
     dance_mode = true;
     i = 0;
     out = millis();
@@ -511,6 +508,7 @@ void set_come_to_me() {
   if (!come_to_me_mode) {
     forced_home();
     set_all_modes_false();
+    set_come_to_me_face();
     come_to_me_mode = true;
     i = 0;
     out = millis();
@@ -521,6 +519,7 @@ void set_arm_up() {
   if (!arm_up_mode) {
     forced_home();
     set_all_modes_false();
+    set_arm_up_face();
     arm_up_mode = true;
     i = 0;
     out = millis();
@@ -531,10 +530,53 @@ void set_idk() {
   if (!idk_mode) {
     forced_home();
     set_all_modes_false();
+    set_idk_face();
     idk_mode = true;
     i = 0;
     out = millis();
   }
+}
+
+void set_hello_face() {
+  oled.clear();
+  oled.drawBitmap(0, 0, hello_face, 128, 64);
+  oled.update();
+}
+
+void set_happy_face() {
+  oled.clear();
+  oled.drawBitmap(0, 0, happy_face, 128, 64);
+  oled.update();
+}
+
+void set_come_to_me_face() {
+  oled.clear();
+  oled.drawBitmap(0, 0, come_to_me_face, 128, 64);
+  oled.update();
+}
+
+void set_arm_up_face() {
+  oled.clear();
+  oled.drawBitmap(0, 0, arm_up_face, 128, 64);
+  oled.update();
+}
+
+void set_dance_face() {
+  oled.clear();
+  oled.drawBitmap(0, 0, dance_face, 128, 64);
+  oled.update();
+}
+
+void set_idk_face() {
+  oled.clear();
+  oled.drawBitmap(0, 0, idk_face, 128, 64);
+  oled.update();
+}
+
+void set_default_face() {
+  oled.clear();
+  oled.drawBitmap(0, 0, default_face, 128, 64);
+  oled.update();
 }
 
 void set_all_modes_false() {
@@ -544,6 +586,7 @@ void set_all_modes_false() {
   arm_up_mode = false;
   happy_mode = false;
   idk_mode = false;
+  set_default_face();
 }
 
 bool is_in_mode() {
@@ -603,11 +646,10 @@ void setup() {
   hub.config(F("MyDevices"), F("ESP"));
   hub.onBuild(build);
   hub.begin();
-  
+
   oled.init();
-  oled.clear();
-  oled.drawBitmap(90, 10, bitmap_32x32, 32, 32);
-  oled.update();
+  set_default_face();
+
 
   soft_home();
   delay(1000);
@@ -669,6 +711,7 @@ void loop() {
     if (millis() - out > HELLO_MODE_TIME) {
       i = 0;
       hello_mode = false;
+      set_default_face();
       if (!is_in_mode()) forced_home();
     }
   }
@@ -683,6 +726,7 @@ void loop() {
     if (millis() - out > HAPPY_MODE_TIME) {
       i = 0;
       happy_mode = false;
+      set_default_face();
       if (!is_in_mode()) forced_home();
     }
   }
@@ -697,6 +741,7 @@ void loop() {
     if (millis() - out > DANCE_MODE_TIME) {
       i = 0;
       dance_mode = false;
+      set_default_face();
       if (!is_in_mode()) forced_home();
     }
   }
@@ -711,11 +756,12 @@ void loop() {
     if (millis() - out > COME_TO_ME_MODE_TIME) {
       i = 0;
       come_to_me_mode = false;
+      set_default_face();
       if (!is_in_mode()) forced_home();
     }
   }
 
-  if (arm_up_mode){
+  if (arm_up_mode) {
     arm_up(i);
     static gh::Timer tmr(200);
     if (tmr) {
@@ -725,6 +771,7 @@ void loop() {
     if (millis() - out > ARM_UP_MODE_TIME) {
       i = 0;
       arm_up_mode = false;
+      set_default_face();
       if (!is_in_mode()) forced_home();
     }
   }
@@ -739,6 +786,7 @@ void loop() {
     if (millis() - out > IDK_MODE_TIME) {
       i = 0;
       idk_mode = false;
+      set_default_face();
       if (!is_in_mode()) forced_home();
     }
   }
