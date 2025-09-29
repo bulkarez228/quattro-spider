@@ -31,7 +31,7 @@ bool come_to_me_mode;
 bool arm_up_mode;
 bool happy_mode;
 bool idk_mode;
-
+  
 
 #define FRONT_LEFT_HIGH_ZERO 90
 #define FRONT_LEFT_LOW_ZERO 160
