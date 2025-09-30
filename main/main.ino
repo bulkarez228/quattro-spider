@@ -624,21 +624,21 @@ void setup() {
   ESP32PWM::allocateTimer(2);
   ESP32PWM::allocateTimer(3);
 
-  front_left_high.attach(16, minUs, maxUs);
+  front_left_high.attach(32, minUs, maxUs);
   front_left_high.setPeriodHertz(50);
-  front_left_low.attach(13, minUs, maxUs);
+  front_left_low.attach(33, minUs, maxUs);
   front_left_low.setPeriodHertz(50);
-  front_right_high.attach(27, minUs, maxUs);
+  front_right_high.attach(25, minUs, maxUs);
   front_right_high.setPeriodHertz(50);
-  front_right_low.attach(14, minUs, maxUs);
+  front_right_low.attach(26, minUs, maxUs);
   front_right_low.setPeriodHertz(50);
-  rear_left_high.attach(25, minUs, maxUs);
+  rear_left_high.attach(27, minUs, maxUs);
   rear_left_high.setPeriodHertz(50);
-  rear_left_low.attach(26, minUs, maxUs);
+  rear_left_low.attach(14, minUs, maxUs);
   rear_left_low.setPeriodHertz(50);
-  rear_right_high.attach(32, minUs, maxUs);
+  rear_right_high.attach(16, minUs, maxUs);
   rear_right_high.setPeriodHertz(50);
-  rear_right_low.attach(33, minUs, maxUs);
+  rear_right_low.attach(13, minUs, maxUs);
   rear_right_low.setPeriodHertz(50);
 
   WiFi.mode(WIFI_AP);
