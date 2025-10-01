@@ -1,7 +1,7 @@
 # quattro spider
 Вдохновленно данным [видео](https://www.instagram.com/iot_robotics_store/reel/DNf6RetS1gL/).
 
-(Результат)[https://youtube.com/shorts/LS13Xz_xl_E?feature=share] на данный момент.
+[Результат](https://youtube.com/shorts/LS13Xz_xl_E?feature=share) на данный момент.
 
 ## Список компонентов
 - Микроконтроллер ESP32
